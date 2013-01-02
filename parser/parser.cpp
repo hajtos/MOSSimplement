@@ -34,11 +34,15 @@ int main(int argc, char **argv) {
     return -1;
   }
 //wczytuje ctags
-  const char command[] = "ctags -x --verbose ";
+  const char command[] = "ctags -x --verbose --c++-kinds=cdefglmnpstuvx ";  //c++kinds only for debug
   char cmd[strlen(argv[1])+strlen(command)+1];
   cmd[0]='\0';
   strcat(cmd, command);
-  char *result = execCMD(strcat(cmd, argv[1]));
+  strcat(cmd, argv[1]);
+
+  //printf("%s\n", cmd);
+
+  char *result = execCMD(cmd);
  
   //printf("%s\n", result);
   

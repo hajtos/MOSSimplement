@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <cstdlib>
+#include <iostream>
 
 #define LETTER 'a'
 using namespace std;
@@ -19,8 +20,14 @@ bool CppParser::setCtagsData(char *str) {
   char *nlPtr = str;
 //name  type  line  stuff \n
   do {
+    char *nlPtrTemp = strchr(nlPtr, '\n');
     char *name = strtok(nlPtr, " ");
+    char *temp = new char[strlen(name)];
+    temp[0] = '\0';
+    strcat(temp, name);
+    name = temp;
     char *type = strtok(NULL, " ");
+    int line = atoi(strtok(NULL, " "));
     Type t;
     if(strcmp(type, "class")==0) {
       t = Class;
@@ -35,13 +42,19 @@ bool CppParser::setCtagsData(char *str) {
     } else {
       t = Other;
     }
-    int line = atoi(strtok(NULL, " "));
-    data.insert(new Record(name, t, line));
-    nlPtr = strchr(nlPtr, '\n');
-    if(nlPtr==NULL) break;
+    //Record record = Record(name, t, line);
+    nlPtr = nlPtrTemp;
+    //cout << name << endl;
+    //cout << record.name << ' ' << record.type << ' ' << record.line << ' ' << endl;
+    data.push_back(name);
     nlPtr++;  //ustawiam kursor na nie \n
+    if(*nlPtr=='\0') break;  //ostatnia linijka ma \n, ale potem jest \0
   } while(true);  //czytam każdą linijkę, aż nie ma linijek
-  return false;
+  /*for(vector<char*>::iterator it = data.begin(); it!=data.end(); it++) {
+  //cout << it->name << ' ' << it->type << ' ' << it->line << ' ' << endl;
+  printf("%s\n", *it);
+  }*/
+  return true;
 }
 
 void CppParser::parseFile(ifstream &ifs) {
@@ -61,32 +74,26 @@ void CppParser::parseFile(ifstream &ifs) {
   while(c1 < buffer+length) {
     if(!isblank(*c1)) {  //UWAGA!! wszytkie whitespace wylatują
       c2 = c1;
-      if(isalpha(*c2) || *c2 == '_') {
-        c2++;
-        while(c2 < buffer+length && (isalpha(*c2) || *c2 == '_' || isdigit(*c2))) c2++;
-//wypisywanie
-/*        while(c1+1 < c2) {
-          cout << *c1; c1++;
-          }
-          cout << endl;*/
-      }
+      while(c2 < buffer+length && (isalpha(*c2) || *c2 == '_' || isdigit(*c2))) c2++;
       if(c2==c1) *dest = *c1;
       else {  //identifier znaleziony
-        Record *target = NULL;
+        char *target = NULL;
         char temp = *c2;
         *c2 = '\0';
-        for(set<Record*>::iterator it = data.begin(); it!=data.end(); it++) {
-          if((*it)->name.compare(c1)==0) {
+        for(vector<char*>::iterator it = data.begin(); it!=data.end(); it++) {
+          if(strcmp((*it), c1)==0) {
             target = *it; break;
           }
         }
-        *c2 = temp;
+        *c2 = temp;  //get over \0
         if(target!=NULL) {
           *dest = LETTER;
+          while(c1+1 < c2) c1++;
         } else {
           while(c1+1 < c2) {
             *dest=*c1; c1++; dest++;
           }
+          *dest=*c1;
         }
       }
       dest++;
@@ -97,7 +104,7 @@ void CppParser::parseFile(ifstream &ifs) {
 
 char* CppParser::getParsedFile() {
 
-  return NULL;
+  return output;
 }
 
 /*

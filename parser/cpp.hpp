@@ -2,26 +2,33 @@
 #include "parser.hpp"
 #endif
 #include <set>
+#include <vector>
+#include <cstring>
 using namespace std;
 
 enum Type {Class, Macro, Function, Local, Member, Namespace, Prototype, Struct, Typedef, Union, Variable, External, Other};
 
 struct Record {
   Type type;
-  string name;
+  char *name;
   int line;
-  Record(string name, Type type, int line) {
+  Record(char *name, Type type, int line) {
     this->type = type;
     this->name = name;
     this->line = line;
   }
+  Record(const Record &record) {
+    this->type = record.type;
+    this->name = record.name;
+    this->line = record.line;
+  }
   bool operator<(const Record &record) const {
-    return name.compare(record.name)==0;
+    return strcmp(name, record.name)<0;
   }
 };
 
 class CppParser : public Parser {
-  set<Record*> data;
+  vector<char*> data;
   char *output;
 public:
   CppParser();

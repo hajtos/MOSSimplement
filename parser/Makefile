@@ -4,7 +4,7 @@ OBJ = cpp.o java.o parser.o
 
 all : parser
 
-%.o : %.cpp
+%.o : %.cpp %.hpp
 	$(CC) $(CFLAGS) $< -o $@
 
 parser : $(OBJ)
@@ -12,3 +12,8 @@ parser : $(OBJ)
 
 clean :
 	rm -f *.o
+
+test : 
+	./parser testy/fibbonaci.cpp
+
+.PHONY: clean test
