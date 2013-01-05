@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="ClientApp" default="compile">
+  <target name="clean" description="remove intermediate files">
+    <delete dir="build/classes"/>
+  </target>
+  <target name="compile">
+    <mkdir dir="build/classes"/>
+    <javac srcdir="src" destdir="build/classes"/>
+  </target>
+  <target name="jar" depends="compile">
+    <jar destfile="build/clientApp.jar" basedir="build/classes">
+      <manifest>
+        <attribute name="Main-Class" value="gui.Main"/>
+      </manifest>
+    </jar>
+  </target>
+  <target name="run" depends="jar">
+    <java jar="build/jar/clientApp.jar" fork="true"/>
+  </target>
+</project>
