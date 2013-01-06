@@ -16,12 +16,22 @@ public class Form extends javax.swing.JFrame {
 
     ResultSet rs;
     Statement stmt;
+    PreparedStatement pstmt;
+    CallableStatement cstmt;
     Connection con;
     int group_id;
     int assignment_id;
     /**
      * Creates new form Form
      */
+    
+    private String StringAllign(String input, int size) {
+        do {
+            input+=" ";
+        } while (input.length()<size);
+        return input;
+    }
+    
     public Form() {
         initComponents();
 
@@ -50,7 +60,6 @@ public class Form extends javax.swing.JFrame {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         Programs = new javax.swing.JComboBox();
         users_list = new java.awt.List();
@@ -64,26 +73,25 @@ public class Form extends javax.swing.JFrame {
         usergroups = new javax.swing.JComboBox();
         matching_button = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
+        match_list = new java.awt.List();
+        fingerprints = new java.awt.List();
+        button1 = new java.awt.Button();
+        button2 = new java.awt.Button();
+        source1 = new java.awt.List();
+        source2 = new java.awt.List();
+        jPanel4 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jButton1.setText("a");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addComponent(jButton1)
-                .addContainerGap(406, Short.MAX_VALUE))
+            .addGap(0, 507, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(51, 51, 51)
-                .addComponent(jButton1)
-                .addContainerGap(281, Short.MAX_VALUE))
+            .addGap(0, 355, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("File sending", jPanel1);
@@ -175,7 +183,7 @@ public class Form extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(133, 133, 133)
                         .addComponent(matching_button, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addContainerGap(78, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -208,18 +216,73 @@ public class Form extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("File managing", jPanel2);
 
+        button1.setLabel("Investigate");
+        button1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button1ActionPerformed(evt);
+            }
+        });
+
+        button2.setLabel("Show Code");
+        button2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 477, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(38, 38, 38)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(fingerprints, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(match_list, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(source1, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addComponent(source2, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 355, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(match_list, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(fingerprints, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2)
+                        .addComponent(source1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(source2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Match results", jPanel3);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 507, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 355, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Assignmets", jPanel4);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -292,8 +355,105 @@ public class Form extends javax.swing.JFrame {
     }//GEN-LAST:event_unadd_allActionPerformed
 
     private void matching_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matching_buttonActionPerformed
+        try {
+            pstmt = con.prepareStatement("create temporary table users_to_match(user_id int)");
+            pstmt.executeUpdate();
+            String statement = "insert into users_to_match select user_id from users where name in (";
+            for (int i=1;i<selected_users.getItemCount();++i) {
+                statement+="?,";
+            }
+            statement+="?)";
+            pstmt = con.prepareStatement(statement);
+            for (int i=0;i<selected_users.getItemCount();++i) {
+                pstmt.setString(i+1, selected_users.getItem(i));
+            }
+            pstmt.executeUpdate();
+            cstmt = con.prepareCall("{ call perform_match(?) }");
+            if (jRadioButton1.isSelected()) {
+                cstmt.setInt(1, 1);
+            }
+            else {
+                cstmt.setInt(1, 0);
+            }
+            cstmt.execute();
+            pstmt = con.prepareStatement("drop temporary table users_to_match");
+            pstmt.executeUpdate();
+            Thread.sleep(5000);
+            rs = stmt.executeQuery("select u1.name as name1, m.source1, m.source2, u2.name as name2,m.match_count,m.all_count,m.id,m.match_count*100/m.all_count as percent from matched m join users u1 on m.id in (select * from temp_matches) and u1.user_id=(select user from programme_codes where id = m.source1) join users u2 on u2.user_id=(select user from programme_codes where id = m.source2) order by percent");
+            while (rs.next()) {
+                String to_add = rs.getString("id");
+                to_add = StringAllign(to_add,5);
+                to_add+=rs.getString("name1")+";"+rs.getString("source1");
+                to_add = StringAllign(to_add,26);
+                to_add+="- ";
+                to_add+=rs.getString("name2")+";"+rs.getString("source2");
+                to_add = StringAllign(to_add,49);
+                to_add+=rs.getString("match_count")+"/"+rs.getString("all_count");
+                to_add = StringAllign(to_add,55);
+                to_add+=rs.getString("percent");
+                match_list.add(to_add);
+            }
+        } catch (InterruptedException | SQLException ex) {
+            Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }//GEN-LAST:event_matching_buttonActionPerformed
+
+    private void button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button1ActionPerformed
+        try {
+            String p = match_list.getSelectedItem();
+            p = p.substring(0,p.indexOf(" "));
+            int match = Integer.parseInt(p);
+            rs = stmt.executeQuery("select f1.position as p1,f2.position as p2,f1.hash_value f1.hash_value from matches m join fingerprints f1 on m.the_match="+p+" and f1.id=m.fingerprint1 join fingerprints f2 on f2.id=m.fingerprint2");
+            while (rs.next()) {
+                String to_add = rs.getString("p1");
+                to_add = StringAllign(to_add,10);
+                to_add+=Integer.toHexString(rs.getInt("hash_value"));
+                to_add = StringAllign(to_add,30);
+                to_add+=rs.getString("p2");
+                fingerprints.add(to_add);
+            }
+            rs = stmt.executeQuery("select file from programme_codes where id = (select source1 from matched where id="+p+")");
+            rs.next();
+            String file = rs.getString("file");
+            while(file.indexOf("\n") != -1) {
+                source1.add(file.substring(0,file.indexOf("\n")));
+                file = file.substring(file.indexOf("\n")+1);
+            }
+            source1.add(file);
+            rs = stmt.executeQuery("select file from programme_codes where id = (select source2 from matched where id="+p+")");
+            rs.next();
+            file = rs.getString("file");
+            while(file.indexOf("\n") != -1) {
+                source2.add(file.substring(0,file.indexOf("\n")));
+                file = file.substring(file.indexOf("\n"));
+            }
+            source2.add(file);
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_button1ActionPerformed
+
+    private void button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button2ActionPerformed
+        try {
+            String item = fingerprints.getSelectedItem();
+            String position1 = item.substring(0, item.indexOf(" "));
+            String p = match_list.getSelectedItem();
+            p = p.substring(0,p.indexOf(" "));
+            rs = stmt.executeQuery("select max(line_number) as line from code_new_lines where program_id=(select source1 from matched where id="+p+") and position>"+position1);
+            rs.next();
+            source1.select(rs.getInt("line"));
+            item = item.substring(item.indexOf(" ")).trim();
+            item = item.substring(item.indexOf(" ")).trim();
+            rs = stmt.executeQuery("select max(line_number) as line from code_new_lines where program_id=(select source2 from matched where id="+p+") and position>"+item);
+            rs.next();
+            source2.select(rs.getInt("line"));
+        } catch (SQLException ex) {
+            Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_button2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -333,15 +493,21 @@ public class Form extends javax.swing.JFrame {
     private javax.swing.JComboBox Programs;
     private javax.swing.JButton add_all;
     private javax.swing.JButton add_user;
-    private javax.swing.JButton jButton1;
+    private java.awt.Button button1;
+    private java.awt.Button button2;
+    private java.awt.List fingerprints;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private java.awt.List match_list;
     private javax.swing.JButton matching_button;
     private java.awt.List selected_users;
+    private java.awt.List source1;
+    private java.awt.List source2;
     private javax.swing.JButton unadd_all;
     private javax.swing.JButton unadd_user;
     private javax.swing.JComboBox usergroups;
