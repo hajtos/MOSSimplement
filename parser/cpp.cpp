@@ -9,11 +9,11 @@
 using namespace std;
 
 CppParser::CppParser() {
-
+  output = NULL;
 }
 
 CppParser::~CppParser() {
-  delete output;
+  if(output!=NULL) delete output;
 }
 
 bool CppParser::setCtagsData(char *str) {

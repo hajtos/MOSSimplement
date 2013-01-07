@@ -1,19 +1,25 @@
 CC = g++
 CFLAGS = -c -Wall -g
-OBJ = cpp.o java.o parser.o
+OBJ = cpp.o java.o parse.o
 
-all : parser
+all : main
 
 %.o : %.cpp %.hpp
 	$(CC) $(CFLAGS) $< -o $@
 
-parser : $(OBJ)
-	$(CC) $(OBJ) -o parser
+main : $(OBJ) main.o
+	$(CC) -g $(OBJ) main.o -o main
+
+main2.o : main2.cpp
+	$(CC) -g -c main2.cpp
+
+main2 : $(OBJ) main2.o
+	$(CC) -g $(OBJ) main2.o -o main2
 
 clean :
 	rm -f *.o
 
-test : 
-	./parser testy/fibbonaci.cpp
+test : main
+	./main testy/fibbonaci.cpp
 
 .PHONY: clean test
