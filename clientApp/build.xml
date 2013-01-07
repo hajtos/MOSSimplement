@@ -15,6 +15,6 @@
     </jar>
   </target>
   <target name="run" depends="jar">
-    <java jar="build/jar/clientApp.jar" fork="true"/>
+    <java jar="build/clientApp.jar" fork="true"/>
   </target>
 </project>
