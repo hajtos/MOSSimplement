@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
     return -1;
   }
   Parse parse;
-  printf("%s\n", parse.parse(argv[1]));
+  char *out = parse.parse((const char*)argv[1]);
+  if(out != NULL) printf("%s\n", out);
   return 0;
 }

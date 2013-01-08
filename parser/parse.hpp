@@ -4,5 +4,5 @@ using namespace std;
 class Parse {
   char* execCMD(char*);
 public:
-  char* parse(char*);
+  char* parse(const char*);
 };

@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <sys/inotify.h>
 #include <fstream>
+#include <dirent.h>
+#include <errno.h>
 #include "parse.hpp"
 using namespace std;
 
@@ -33,25 +35,43 @@ int main(int argc, char **argv) {
 
   while((length = read(fd, buf, sizeof(buf)))>0) {
     inotify_event *event;
-    for (size_t i = 0; i < static_cast<size_t>(length);
-         i += sizeof(inotify_event) + event->len)
-    {
+    char *out = NULL;
+    string filename;
+    for (size_t i = 0; i < static_cast<size_t>(length); i += sizeof(inotify_event) + event->len) {
       event = reinterpret_cast<inotify_event *>(&buf[i]);
       if (event->len > 0) {
         printf("The file %s was created.\n", event->name);
-        char filename[1024];
-        filename[0] = '\0';
-        strcat(filename, input);
-        strcat(filename, "/");
-        strcat(filename, event->name);
-        printf("%s\n", filename);
-        char *out = parse.parse(filename);
-        /*if(out == NULL) {
-          cerr << "wystąpił błąd przy parsowaniu" << endl;
-          return -1;
-          } else printf("%s\n", out);*/
-        break;
+        filename = input;
+        filename += "/";
+        filename += event->name;
+        cout << filename << endl;
+        out = parse.parse(filename.c_str());
+        if(out == NULL) {
+          cerr << "wystąpił błąd przy parsowaniu" << filename << endl;
+        } else printf("\n", out);
+        delete[] out;
+        out = NULL;
+        //break;
       }
     }
+//check for files left
+    DIR *dp;
+    struct dirent *dirp;
+    if((dp  = opendir(input)) == NULL) {
+      cout << "Error(" << errno << ") opening " << input << endl;
+      return errno;
+    }
+    while ((dirp = readdir(dp)) != NULL) {
+      filename = input;
+      filename += "/";
+      filename += dirp->d_name;
+      if(dirp->d_name[0] != '.') {
+        out = parse.parse(filename.c_str());
+        if(out == NULL) {
+          cerr << "wystąpił błąd przy parsowaniu" << filename << endl;
+        } else printf("\n", out);
+      }
+    }
+    closedir(dp);
   }
 }

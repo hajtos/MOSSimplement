@@ -26,7 +26,7 @@ bool CppParser::setCtagsData(char *str) {
     temp[0] = '\0';
     strcat(temp, name);
     name = temp;*/
-    char *type = strtok(NULL, " ");
+    /*char *type = strtok(NULL, " ");
     int line = atoi(strtok(NULL, " "));
     Type t;
     if(strcmp(type, "class")==0) {
@@ -42,11 +42,12 @@ bool CppParser::setCtagsData(char *str) {
     } else {
       t = Other;
     }
-    //Record record = Record(name, t, line);
+    Record record = Record(name, t, line);*/
     nlPtr = nlPtrTemp;
     //cout << name << endl;
     //cout << record.name << ' ' << record.type << ' ' << record.line << ' ' << endl;
     data.push_back(name);
+    //data.insert(record);
     nlPtr++;  //ustawiam kursor na nie \n
     if(*nlPtr=='\0') break;  //ostatnia linijka ma \n, ale potem jest \0
   } while(true);  //czytam każdą linijkę, aż nie ma linijek
@@ -58,7 +59,7 @@ bool CppParser::setCtagsData(char *str) {
 }
 
 void CppParser::parseFile(ifstream &ifs) {
-  /*ifs.seekg(0, ios::end);
+  ifs.seekg(0, ios::end);
   int length = ifs.tellg();
   ifs.seekg(0, ios::beg);
   char *buffer = new char[length];
@@ -77,16 +78,23 @@ void CppParser::parseFile(ifstream &ifs) {
       while(c2 < buffer+length && (isalpha(*c2) || *c2 == '_' || isdigit(*c2))) c2++;
       if(c2==c1) *dest = *c1;
       else {  //identifier znaleziony
-        char *target = NULL;
+        bool found = false;
         char temp = *c2;
         *c2 = '\0';
         for(vector<char*>::iterator it = data.begin(); it!=data.end(); it++) {
-          if(strcmp((*it), c1)==0) {
-            target = *it; break;
+          if(strcmp((*it), c1)==0 && !isKnown(*it)) {
+            string temp(*it);
+            found = true; break;
           }
         }
+
+        /*for(set<Record>::iterator it = data.begin(); it!=data.end(); it++) {
+          if(strcmp((*it).name, c1)==0) {
+            found = true; break;
+          }
+          }*/
         *c2 = temp;  //get over \0
-        if(target!=NULL) {
+        if(found) {
           *dest = LETTER;
           while(c1+1 < c2) c1++;
         } else {
@@ -102,8 +110,8 @@ void CppParser::parseFile(ifstream &ifs) {
   }
 //c1 wskazuje na buffer+length, czyli na \0, ale nie przeniosło do output
   *dest = '\0';
-  cout << dest << endl << buffer << endl;
-  delete buffer;*/
+  //cout << dest << endl << buffer << endl;
+  delete[] buffer;
 }
 
 char* CppParser::getParsedFile() {

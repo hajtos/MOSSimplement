@@ -16,35 +16,21 @@ using namespace std;
 char* Parse::execCMD(char *cmd) {
   FILE *pipe = popen(cmd, "r");
   if(pipe==NULL) return NULL;
-  fd_set set;
-  struct timeval timeout;
-     
-  /* Initialize the file descriptor set. */
-  FD_ZERO (&set);
-  FD_SET (pipe, &set);
-     
-  /* Initialize the timeout data structure. */
-  timeout.tv_sec = 1;
-  timeout.tv_usec = 0;
-  if(select (FD_SETSIZE, &set, NULL, NULL, &timeout) < 0) {
-    cerr << "select failure" << endl;
-    return NULL;
-  }
-  fseek(pipe, 0, SEEK_END);
-  int fileSize = ftell(pipe);
-  fseek(pipe, 0, SEEK_SET);
-  if(fileSize < 0) {
-    cerr << "execCMD: fileSize < 0" << endl;
-    return NULL;
-  }
-  char *buffer = new char[fileSize+1];
-  int readed = fread(buffer, 1, fileSize, pipe);
-  if(readed == 0 && !feof(pipe)) return NULL;
-  buffer[readed] = '\0';
+  char temp[1000];
+  string data;
+  while(!feof(pipe)) {
+    if(fgets(temp, 100, pipe) != NULL)
+      data += temp;
+      }
+  if(data.size() == 0) return NULL;
+  //cout << data.size() << endl;
+  char *buffer = new char[data.size()];
+  buffer[0] = '\0';
+  strcat(buffer, data.c_str());
   return buffer;
 }
 
-char* Parse::parse(char *file) {
+char* Parse::parse(const char *file) {
 //czy plik istnieje?
   ifstream ifs(file, ifstream::in);
   if(!ifs.is_open()) {
@@ -91,8 +77,8 @@ char* Parse::parse(char *file) {
     ctagsData++;
   }
 
-  printf("%s\n", language);
-  printf("%s\n", ctagsData);
+  //printf("%s\n", language);
+  //printf("%s\n", ctagsData);
 
   Parser *parser = NULL;
 
@@ -112,7 +98,7 @@ char* Parse::parse(char *file) {
   data[0] = '\0';
   strcat(data, output);
 
-  delete result;
+  delete[] result;
   if(parser!=NULL) delete parser;
   return data;
   return output;
