@@ -3,10 +3,16 @@
  * and open the template in the editor.
  */
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.*;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -21,6 +27,8 @@ public class Form extends javax.swing.JFrame {
     Connection con;
     int group_id;
     int assignment_id;
+    JFileChooser fc;
+    JFileChooser dc;
     /**
      * Creates new form Form
      */
@@ -34,7 +42,8 @@ public class Form extends javax.swing.JFrame {
     
     public Form() {
         initComponents();
-
+        fc = new JFileChooser();
+        dc = new JFileChooser();//It's good to be in DC :D
         try {
             Class.forName("com.mysql.jdbc.Driver");
             String dbUrl = "jdbc:mysql://localhost/anti_plagiarism?user=root&password=Sur0k4tk4";
@@ -42,7 +51,14 @@ public class Form extends javax.swing.JFrame {
             stmt = con.createStatement();
             rs = stmt.executeQuery("SELECT * FROM user_groups");
             while (rs.next()) {
-                usergroups.addItem(rs.getString("group_name"));
+                String p = rs.getString("group_name");
+                usergroups.addItem(p);
+                usergroups_forfile.addItem(p);
+                usergroups_assign.addItem(p);
+            }
+            rs = stmt.executeQuery("SELECT * FROM languages");
+            while (rs.next()) {
+                languages.addItem(rs.getString("name"));
             }
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
@@ -60,6 +76,17 @@ public class Form extends javax.swing.JFrame {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
+        file_path = new javax.swing.JTextField();
+        usergroups_forfile = new javax.swing.JComboBox();
+        user_forfile = new javax.swing.JComboBox();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        directory_path = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        assignment_forfile = new javax.swing.JComboBox();
+        jSeparator2 = new javax.swing.JSeparator();
+        jSeparator3 = new javax.swing.JSeparator();
         jPanel2 = new javax.swing.JPanel();
         Programs = new javax.swing.JComboBox();
         users_list = new java.awt.List();
@@ -80,23 +107,114 @@ public class Form extends javax.swing.JFrame {
         source1 = new java.awt.List();
         source2 = new java.awt.List();
         jPanel4 = new javax.swing.JPanel();
+        new_group = new javax.swing.JTextField();
+        jToggleButton1 = new javax.swing.JToggleButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        usergroups_assign = new javax.swing.JComboBox();
+        new_user = new javax.swing.JTextField();
+        new_assignment = new javax.swing.JTextField();
+        jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        languages = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        usergroups_forfile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usergroups_forfileActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Select File");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Send file");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Select dir");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jButton4.setText("Send files");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 507, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(74, 74, 74)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(usergroups_forfile, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(user_forfile, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(assignment_forfile, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(directory_path, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(file_path, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)))
+                .addContainerGap(18, Short.MAX_VALUE))
+            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jSeparator3)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 355, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(usergroups_forfile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(user_forfile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(assignment_forfile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(file_path, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(directory_path, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton4)
+                .addContainerGap(166, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("File sending", jPanel1);
 
         Programs.setName(""); // NOI18N
+        Programs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ProgramsActionPerformed(evt);
+            }
+        });
 
         jRadioButton1.setSelected(true);
         jRadioButton1.setText("All programs");
@@ -271,15 +389,75 @@ public class Form extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Match results", jPanel3);
 
+        jToggleButton1.setText("Create new group");
+        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton5.setText("Create new user");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton6.setText("Add assignment");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 507, Short.MAX_VALUE)
+            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(34, 34, 34)
+                        .addComponent(new_group, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jToggleButton1))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(usergroups_assign, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(new_user)
+                            .addComponent(new_assignment, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(languages, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(108, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 355, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jToggleButton1)
+                    .addComponent(new_group, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(usergroups_assign, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(new_user, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(new_assignment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(languages, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton6))
+                .addContainerGap(212, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Assignmets", jPanel4);
@@ -356,16 +534,21 @@ public class Form extends javax.swing.JFrame {
 
     private void matching_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matching_buttonActionPerformed
         try {
-            pstmt = con.prepareStatement("create temporary table users_to_match(user_id int)");
+            pstmt = con.prepareStatement("create temporary table users_to_match(user1 int,user2 int,assignment_id int)");
             pstmt.executeUpdate();
-            String statement = "insert into users_to_match select user_id from users where name in (";
+            String userlist = "(";
             for (int i=1;i<selected_users.getItemCount();++i) {
-                statement+="?,";
+                userlist+="?,";
             }
-            statement+="?)";
+            userlist+="?)";
+            String statement = "insert into users_to_match select u1.user_id,u2.user_id,? from users u1 join users u2 on u1.name in "+userlist+" and u1.user_id>u2.user_id and u2.name in "+userlist;
             pstmt = con.prepareStatement(statement);
+            rs = stmt.executeQuery("select id from assignments where program_name='"+Programs.getSelectedItem().toString()+"'");
+            rs.next();
+            pstmt.setString(1, rs.getString("id"));
             for (int i=0;i<selected_users.getItemCount();++i) {
-                pstmt.setString(i+1, selected_users.getItem(i));
+                pstmt.setString(i+2, selected_users.getItem(i));
+                pstmt.setString(i+2+selected_users.getItemCount(), selected_users.getItem(i));
             }
             pstmt.executeUpdate();
             cstmt = con.prepareCall("{ call perform_match(?) }");
@@ -403,7 +586,6 @@ public class Form extends javax.swing.JFrame {
         try {
             String p = match_list.getSelectedItem();
             p = p.substring(0,p.indexOf(" "));
-            int match = Integer.parseInt(p);
             rs = stmt.executeQuery("select f1.position as p1,f2.position as p2,f1.hash_value f1.hash_value from matches m join fingerprints f1 on m.the_match="+p+" and f1.id=m.fingerprint1 join fingerprints f2 on f2.id=m.fingerprint2");
             while (rs.next()) {
                 String to_add = rs.getString("p1");
@@ -455,6 +637,159 @@ public class Form extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_button2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        int returnVal = fc.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            String filename = fc.getSelectedFile().getPath();
+            file_path.setText(filename);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        
+        dc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        dc.setAcceptAllFileFilterUsed(false);
+        int returnVal = dc.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            String filename = dc.getSelectedFile().getPath();
+            directory_path.setText(filename);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void send_file(String path) {
+        try {
+            BufferedReader reader = null;
+            String content = null;
+            try {
+                reader = new BufferedReader( new FileReader (path));
+                String         line;
+                StringBuilder  stringBuilder = new StringBuilder();
+                while( ( line = reader.readLine() ) != null ) {
+                    stringBuilder.append( line );
+                    stringBuilder.append("\n");
+                }
+                content = stringBuilder.toString();
+            } catch (IOException ex) {
+                Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+                throw new SQLException();
+            } finally {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            rs = stmt.executeQuery("select u.user_id as uid,a.id as aid from users u join assignments a on u.name='"+user_forfile.getSelectedItem().toString()+"' and a.program_name='"+assignment_forfile.getSelectedItem().toString()+"'");
+            rs.next();
+            pstmt = con.prepareStatement("insert into programme_codes (programme,user,file) values (?,?,?)");
+            pstmt.setString(1, rs.getString("aid"));
+            pstmt.setString(2, rs.getString("uid"));
+            pstmt.setString(3, content);
+            pstmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        send_file(file_path.getText());
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void usergroups_forfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usergroups_forfileActionPerformed
+        try {
+            rs = stmt.executeQuery("select id from user_groups where group_name='"+usergroups_forfile.getSelectedItem().toString()+"'");
+            rs.next();
+            String user_group = rs.getString("id");
+            rs = stmt.executeQuery("select * from assignments where user_group="+user_group);
+            while (rs.next()) {
+                assignment_forfile.addItem(rs.getString("program_name"));
+            }
+            rs = stmt.executeQuery("select * from users where user_group="+user_group);
+            while (rs.next()) {
+                user_forfile.addItem(rs.getString("name"));
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_usergroups_forfileActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        File directory = new File(directory_path.getText());
+        if(directory.isDirectory()) {
+            String filenames[] = directory.list();
+            for (int i=0;i<filenames.length;++i) {
+                File file = new File(directory_path.getText()+"/"+filenames[i]);
+                if (!file.isDirectory()) {
+                    send_file(directory_path.getText()+"/"+filenames[i]);
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+        try {        
+            pstmt = con.prepareStatement("insert into user_groups (group_name) values (?)");
+            String p = new_group.getText();
+            pstmt.setString(1,p);
+            pstmt.executeUpdate();
+            usergroups.addItem(p);
+            usergroups_forfile.addItem(p);
+            usergroups_assign.addItem(p);
+        } catch (SQLException ex) {
+            Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        try {
+            String q = usergroups_assign.getSelectedItem().toString();
+            rs = stmt.executeQuery("select * from user_groups where group_name='"+q+"'");
+            rs.next();
+            pstmt = con.prepareStatement("insert into users (name,user_group) values (?,?)");
+            String p = new_user.getText();
+            pstmt.setString(1,p);
+            pstmt.setString(2, rs.getString("id"));
+            pstmt.executeUpdate();
+            if (usergroups_forfile.getSelectedItem().toString().equals(q)) {
+                user_forfile.addItem(p);
+            }
+            if (usergroups.getSelectedItem().toString().equals(q)) {
+                users_list.add(p);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        try {
+            String q = usergroups_assign.getSelectedItem().toString();
+            rs = stmt.executeQuery("select * from user_groups where group_name='"+q+"'");
+            rs.next();
+            pstmt = con.prepareStatement("insert into assignments (program_name,user_group,language) values (?,?,?)");
+            String p = new_assignment.getText();
+            pstmt.setString(1,p);
+            pstmt.setString(2, rs.getString("id"));
+            rs = stmt.executeQuery("select * from languages where name='"+languages.getSelectedItem().toString()+"'");
+            rs.next();
+            pstmt.setString(3, rs.getString("id"));
+            pstmt.executeUpdate();
+            if (usergroups_forfile.getSelectedItem().toString().equals(q)) {
+                assignment_forfile.addItem(p);
+            }
+            if (usergroups.getSelectedItem().toString().equals(q)) {
+                Programs.addItem(p);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Form.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void ProgramsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ProgramsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ProgramsActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -484,6 +819,7 @@ public class Form extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new Form().setVisible(true);
             }
@@ -493,24 +829,44 @@ public class Form extends javax.swing.JFrame {
     private javax.swing.JComboBox Programs;
     private javax.swing.JButton add_all;
     private javax.swing.JButton add_user;
+    private javax.swing.JComboBox assignment_forfile;
     private java.awt.Button button1;
     private java.awt.Button button2;
+    private javax.swing.JTextField directory_path;
+    private javax.swing.JTextField file_path;
     private java.awt.List fingerprints;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JComboBox languages;
     private java.awt.List match_list;
     private javax.swing.JButton matching_button;
+    private javax.swing.JTextField new_assignment;
+    private javax.swing.JTextField new_group;
+    private javax.swing.JTextField new_user;
     private java.awt.List selected_users;
     private java.awt.List source1;
     private java.awt.List source2;
     private javax.swing.JButton unadd_all;
     private javax.swing.JButton unadd_user;
+    private javax.swing.JComboBox user_forfile;
     private javax.swing.JComboBox usergroups;
+    private javax.swing.JComboBox usergroups_assign;
+    private javax.swing.JComboBox usergroups_forfile;
     private java.awt.List users_list;
     // End of variables declaration//GEN-END:variables
 }
