@@ -5,6 +5,9 @@
 #include <cstdio>
 #include <cstring>
 #include <cassert>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/time.h>
 #include "cpp.hpp"
 #include "java.hpp"
 #include "parse.hpp"
@@ -13,9 +16,27 @@ using namespace std;
 char* Parse::execCMD(char *cmd) {
   FILE *pipe = popen(cmd, "r");
   if(pipe==NULL) return NULL;
+  fd_set set;
+  struct timeval timeout;
+     
+  /* Initialize the file descriptor set. */
+  FD_ZERO (&set);
+  FD_SET (pipe, &set);
+     
+  /* Initialize the timeout data structure. */
+  timeout.tv_sec = 1;
+  timeout.tv_usec = 0;
+  if(select (FD_SETSIZE, &set, NULL, NULL, &timeout) < 0) {
+    cerr << "select failure" << endl;
+    return NULL;
+  }
   fseek(pipe, 0, SEEK_END);
   int fileSize = ftell(pipe);
   fseek(pipe, 0, SEEK_SET);
+  if(fileSize < 0) {
+    cerr << "execCMD: fileSize < 0" << endl;
+    return NULL;
+  }
   char *buffer = new char[fileSize+1];
   int readed = fread(buffer, 1, fileSize, pipe);
   if(readed == 0 && !feof(pipe)) return NULL;
@@ -73,7 +94,7 @@ char* Parse::parse(char *file) {
   printf("%s\n", language);
   printf("%s\n", ctagsData);
 
-  Parser *parser;
+  Parser *parser = NULL;
 
   if(strcmp(language, "C++")==0) {
     parser = new CppParser();
@@ -92,6 +113,7 @@ char* Parse::parse(char *file) {
   strcat(data, output);
 
   delete result;
-  delete parser;
+  if(parser!=NULL) delete parser;
   return data;
+  return output;
 }

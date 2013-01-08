@@ -46,10 +46,10 @@ int main(int argc, char **argv) {
         strcat(filename, event->name);
         printf("%s\n", filename);
         char *out = parse.parse(filename);
-        if(out == NULL) {
+        /*if(out == NULL) {
           cerr << "wystąpił błąd przy parsowaniu" << endl;
           return -1;
-        } else printf("%s\n", out);
+          } else printf("%s\n", out);*/
         break;
       }
     }

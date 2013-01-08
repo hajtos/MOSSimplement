@@ -22,10 +22,10 @@ bool CppParser::setCtagsData(char *str) {
   do {
     char *nlPtrTemp = strchr(nlPtr, '\n');
     char *name = strtok(nlPtr, " ");
-    char *temp = new char[strlen(name)];
+    /*char *temp = new char[strlen(name)];
     temp[0] = '\0';
     strcat(temp, name);
-    name = temp;
+    name = temp;*/
     char *type = strtok(NULL, " ");
     int line = atoi(strtok(NULL, " "));
     Type t;
@@ -58,7 +58,7 @@ bool CppParser::setCtagsData(char *str) {
 }
 
 void CppParser::parseFile(ifstream &ifs) {
-  ifs.seekg(0, ios::end);
+  /*ifs.seekg(0, ios::end);
   int length = ifs.tellg();
   ifs.seekg(0, ios::beg);
   char *buffer = new char[length];
@@ -100,10 +100,13 @@ void CppParser::parseFile(ifstream &ifs) {
     }
     c1++;
   }
+//c1 wskazuje na buffer+length, czyli na \0, ale nie przeniosło do output
+  *dest = '\0';
+  cout << dest << endl << buffer << endl;
+  delete buffer;*/
 }
 
 char* CppParser::getParsedFile() {
-
   return output;
 }
 

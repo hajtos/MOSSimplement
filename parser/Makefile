@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -c -Wall -g
 OBJ = cpp.o java.o parse.o
 
-all : main
+all : main2
 
 %.o : %.cpp %.hpp
 	$(CC) $(CFLAGS) $< -o $@
