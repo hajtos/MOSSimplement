@@ -1,19 +1,32 @@
 CC = g++
-CFLAGS = -c -Wall -g
-OBJ = cpp.o java.o parser.o
+CFLAGS = -Wall -g -std=c++11 -pthread
+OBJ = cpp.o java.o parse.o parser.o
 
-all : parser
+all : main2 main
 
 %.o : %.cpp %.hpp
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
-parser : $(OBJ)
-	$(CC) $(OBJ) -o parser
+main.o : main.cpp
+	$(CC) $(CFLAGS) -c main.cpp
 
-clean :
+main2.o : main2.cpp
+	$(CC) $(CFLAGS) -c main2.cpp
+
+main : $(OBJ) main.o
+	$(CC) $(CFLAGS) $(OBJ) main.o -o main
+
+main2 : $(OBJ) main2.o
+	$(CC) $(CFLAGS) $(OBJ) main2.o -o main2
+
+clean : clean-outputs
 	rm -f *.o
 
-test : 
-	./parser testy/fibbonaci.cpp
+clean-outputs :
+	rm -f output/*
+	rm -f temp/*
 
-.PHONY: clean test
+test : main
+	./main testy/fibbonaci.cpp
+
+.PHONY: clean test clean-outputs
