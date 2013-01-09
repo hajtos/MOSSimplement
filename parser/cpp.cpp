@@ -85,7 +85,7 @@ void CppParser::parseFile(ifstream &ifs) {
 //c1 wskazuje na buffer+length, czyli na \0, ale nie przeniosło do output
   *dest = '\0';
   //cout << dest << endl << buffer << endl;
-  string nls = "//";
+  string nls = "\n//";
   char temp[15];
   for(vector<unsigned short int>::iterator it = nl.begin(); it!=nl.end(); it++) {
     snprintf(temp, 15, "%d", *it);
