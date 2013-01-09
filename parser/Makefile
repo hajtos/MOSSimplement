@@ -19,10 +19,13 @@ main2.o : main2.cpp
 main2 : $(OBJ) main2.o
 	$(CC) -g $(OBJ) main2.o -o main2
 
-clean :
+clean : clean-outputs
 	rm -f *.o
+
+clean-outputs :
+	rm -f output/*
 
 test : main
 	./main testy/fibbonaci.cpp
 
-.PHONY: clean test
+.PHONY: clean test clean-outputs
