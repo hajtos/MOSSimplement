@@ -94,10 +94,9 @@ char* Parse::parse(const char *file) {
 
   if(output==NULL) return NULL;
 //printf("%s\n", output);
-  char *data = new char[strlen(output)];
+  char *data = new char[strlen(output)+1];
   data[0] = '\0';
   strcat(data, output);
-
   delete[] result;
   if(parser!=NULL) delete parser;
   return data;

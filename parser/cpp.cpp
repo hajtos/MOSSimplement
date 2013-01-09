@@ -13,7 +13,7 @@ CppParser::CppParser() {
 }
 
 CppParser::~CppParser() {
-  if(output!=NULL) delete output;
+  if(output!=NULL) delete[] output;
 }
 
 bool CppParser::setCtagsData(char *str) {
@@ -22,39 +22,11 @@ bool CppParser::setCtagsData(char *str) {
   do {
     char *nlPtrTemp = strchr(nlPtr, '\n');
     char *name = strtok(nlPtr, " ");
-    /*char *temp = new char[strlen(name)];
-    temp[0] = '\0';
-    strcat(temp, name);
-    name = temp;*/
-    /*char *type = strtok(NULL, " ");
-    int line = atoi(strtok(NULL, " "));
-    Type t;
-    if(strcmp(type, "class")==0) {
-      t = Class;
-    } else if(strcmp(type, "function")==0) {
-      t = Function;
-    } else if(strcmp(type, "member")==0) {
-      t = Member;
-    } else if(strcmp(type, "variable")==0) {
-      t = Variable;
-    } else if(strcmp(type, "local")==0) {
-      t = Local;
-    } else {
-      t = Other;
-    }
-    Record record = Record(name, t, line);*/
     nlPtr = nlPtrTemp;
-    //cout << name << endl;
-    //cout << record.name << ' ' << record.type << ' ' << record.line << ' ' << endl;
     data.push_back(name);
-    //data.insert(record);
     nlPtr++;  //ustawiam kursor na nie \n
     if(*nlPtr=='\0') break;  //ostatnia linijka ma \n, ale potem jest \0
   } while(true);  //czytam każdą linijkę, aż nie ma linijek
-  /*for(vector<char*>::iterator it = data.begin(); it!=data.end(); it++) {
-  //cout << it->name << ' ' << it->type << ' ' << it->line << ' ' << endl;
-  printf("%s\n", *it);
-  }*/
   return true;
 }
 
@@ -63,7 +35,7 @@ void CppParser::parseFile(ifstream &ifs) {
   int length = ifs.tellg();
   ifs.seekg(0, ios::beg);
   char *buffer = new char[length];
-  output = new char[length];
+  output = new char[length+1];
 //wczytuje plik
   ifs.read(buffer, length);
   ifs.close();
@@ -72,8 +44,10 @@ void CppParser::parseFile(ifstream &ifs) {
   char *c1, *c2, *dest;
   c1 = c2 = buffer;
   dest = output;
+  vector<unsigned short int> nl;
   while(c1 < buffer+length) {
-    if(!isblank(*c1)) {  //UWAGA!! wszytkie whitespace wylatują
+    if(*c1 == '\n') nl.push_back(c1-buffer+1);
+    else if(!isblank(*c1)) {  //UWAGA!! wszytkie whitespace wylatują
       c2 = c1;
       while(c2 < buffer+length && (isalpha(*c2) || *c2 == '_' || isdigit(*c2))) c2++;
       if(c2==c1) *dest = *c1;
@@ -111,6 +85,18 @@ void CppParser::parseFile(ifstream &ifs) {
 //c1 wskazuje na buffer+length, czyli na \0, ale nie przeniosło do output
   *dest = '\0';
   //cout << dest << endl << buffer << endl;
+  string nls = "//";
+  char temp[15];
+  for(vector<unsigned short int>::iterator it = nl.begin(); it!=nl.end(); it++) {
+    snprintf(temp, 15, "%d", *it);
+    nls += temp; nls += "|";
+  }
+  char *newOutput = new char[dest-output+1+nls.size()];
+  int outputEnd = dest-output;
+  memcpy(newOutput, output, outputEnd);
+  memcpy(newOutput+outputEnd, nls.c_str(), nls.size()+1);
+  delete[] output;
+  output = newOutput;
   delete[] buffer;
 }
 
